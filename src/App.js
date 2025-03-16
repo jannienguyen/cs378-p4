@@ -1,6 +1,8 @@
 import './App.css';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const [weatherForecast, setWeatherForecast] = useState(null);
@@ -8,6 +10,7 @@ function App() {
   const [cities, setCities] = useState(['Austin', 'Dallas', 'Houston']);
   const [error, setError] = useState('');
   const [cityCoordinates, setCityCoordinates] = useState({});
+  const initButtonRef = useRef(null);
 
   const fetchWeatherForecast = async (latitude, longitude, timezone) => {
     try {
@@ -65,7 +68,7 @@ function App() {
 
       return { latitude, longitude, timezone };
     } catch (err) {
-      setError(`Could not find weather for ${city}`);
+      setError(`Latitude and longitude for ${city} not found!`);
     }
   }
 
@@ -104,6 +107,10 @@ function App() {
       }
     };
     loadInitialData();
+
+    if (initButtonRef.current) {
+      initButtonRef.current.focus();
+    }
   }, []);
   
 
@@ -111,41 +118,46 @@ function App() {
     <div>
       <div>
         {cities.map((city, index) => (
-          <button key={index} onClick={() => handleCityButtonClick(city)}>
+          <button 
+            class="cityButton" 
+            key={index} 
+            onClick={() => handleCityButtonClick(city)}
+            ref={city === 'Austin' ? initButtonRef : null}
+          >
             {city}
           </button>
         ))}
       </div>
 
       <div>
-        <input
+        <input class="cityInput"
           type="text"
           value={cityInput}
           onChange={(e) => setCityInput(e.target.value)}
         />
-        <button onClick={handleAddCityClick}>+</button>
+        <button class="cityButton addCityButton" onClick={handleAddCityClick}>+</button>
       </div>
 
-      {error && <p>{error}</p>}
+      {error && <p class="errorText">{error}</p>}
 
       {weatherForecast && (
-        <div>
-          <div>
-            <div>
+        <div class="weatherForecast">
+          <div class="row">
+            <div class="col-3 col-md-1">
               <strong>Time</strong>
             </div>
-            <div>
+            <div class="col-9 col-md-11">
               <strong>Temperature</strong>
             </div>
           </div>
 
           <div>
             {weatherForecast.map((forecast, index) => (
-              <div key={index}>
-                <div>
+              <div class="row" key={index}>
+                <div class="col-3 col-md-1">
                   {forecast.time}
                 </div>
-                <div>
+                <div class="col-9 col-md-11">
                   {forecast.temperature} F
                 </div>
               </div>
